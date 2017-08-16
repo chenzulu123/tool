@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>jQuery头像裁剪插件DEMO演示</title>
+
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+
+</head>
+
+<body>
+	<div class="container">
+
+		<!-- 图片框 -->
+		<div class="imageBox">
+
+			<!-- 图片选择框 -->
+			<div class="thumbBox"></div>
+			 <!-- <div class="spinner" style="display: none">Loading...</div>  -->
+		</div>
+
+		<!-- 工具栏 -->
+		<div class="action">
+			<div class="new-contentarea tc">
+				<a href="javascript:void(0)" class="upload-img">
+					<!-- 利用label 的for属性将label绑定到input标签 -->
+					<label for="upload-file">上传图像</label>
+				</a>
+				<input type="file" class="" name="upload-file" id="upload-file" />
+			</div>
+			<input type="button" id="btnCrop" class="Btnsty_peyton" value="裁切">
+			<input type="button" id="btnZoomIn" class="Btnsty_peyton" value="+">
+			<input type="button" id="btnZoomOut" class="Btnsty_peyton" value="-">
+		</div>
+
+		<!-- 图片裁剪栏 -->
+		<div class="cropped"></div>
+
+	</div>
+
+	<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="js/cropbox.js"></script>
+
+	<script type="text/javascript">
+		/* 
+   			 要求:
+       			 1.点击-号按钮缩小图片
+       			 2.点击+号按钮放大图片
+       			 3.点击裁切按钮 将图片裁切部分在右边显示
+       			 4.点击上传图像按钮 更换图片
+       			 5.鼠标按下后拖动图片
+       			 6.鼠标滚动放大或缩小图片
+		*/
+		$(window).load(function () {
+			//定义对象
+			var options =
+				{
+					thumbBox: '.thumbBox',
+					spinner: '.spinner',
+					imgSrc: 'img/avatar.jpg'
+				}
+				
+			var cropper = $('.imageBox').cropbox(options);
+			//change  触发被选元素的change事件 当文件被调用后立即使用
+			$('#upload-file').on('change', function () {
+				//利用fileReader对象来读取
+				var reader = new FileReader();
+				//file元素的files属性,包含了所有选择文件,利用索引0取出
+				reader.readAsDataURL(this.files[0]);
+				//读取完成后调用回调函数,将图片选择框中的图片显示到图片裁剪栏
+				reader.onload = function (e) {
+					options.imgSrc = e.target.result;
+					//重新赋值cropper
+					cropper = $('.imageBox').cropbox(options);
+				}
+				// this.files = [];
+			})
+			//裁剪按钮点击事件
+			$('#btnCrop').on('click', function () {
+				//
+				var img = cropper.getDataURL();
+				$('.cropped').html('');
+				//在图片裁切栏添加三个不同显示框
+				$('.cropped').append('<img src="' + img + '" align="absmiddle" style="width:64px;margin-top:4px;border-radius:64px;box-shadow:0px 0px 12px #7E7E7E;" ><p>64px*64px</p>');
+				$('.cropped').append('<img src="' + img + '" align="absmiddle" style="width:128px;margin-top:4px;border-radius:128px;box-shadow:0px 0px 12px #7E7E7E;"><p>128px*128px</p>');
+				$('.cropped').append('<img src="' + img + '" align="absmiddle" style="width:180px;margin-top:4px;border-radius:180px;box-shadow:0px 0px 12px #7E7E7E;"><p>180px*180px</p>');
+			})
+			//放大图片按钮点击事件
+			$('#btnZoomIn').on('click', function () {
+				cropper.zoomIn();
+			})
+			//缩小图片按钮点击事件
+			$('#btnZoomOut').on('click', function () {
+				cropper.zoomOut();
+			})
+		});
+	</script>
+</body>
+
+</html>
