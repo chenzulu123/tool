@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>待办事项小程序</title>
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" href="css/app.css">
+	<script src="./lib/angular.min.js"></script>
+</head>
+
+<body ng-app="todoApp">
+	<section class="todoapp" ng-controller="todoCtrl">
+		<header class="header">
+			<h1>todos</h1>
+			<form ng-submit="add()">
+				<input class="new-todo" placeholder="列出你要完成的事项" autofocus ng-model="name">
+			</form>
+		</header>
+		<section class="main">
+			<input class="toggle-all" type="checkbox">
+			<ul class="todo-list">
+				<li ng-repeat="item in list" ng-class="{completed:item.isFinished}">
+					<div class="view">
+						<input class="toggle" type="checkbox" ng-click="toogle(item.id)">
+						<label>{{item.name}}</label>
+						<button class="destroy" ng-click="delete(item.id)"></button>
+					</div>
+					<input class="edit" value="Rule the web">
+				</li>
+			</ul>
+		</section>
+		<footer class="footer">
+			<span class="todo-count">还有<strong>{{countNum}}</strong>项未完成</span>
+			<button class="clear-completed" ng-click="clear()">清除已完成</button>
+		</footer>
+	</section>
+	<footer class="info">
+	</footer>
+	<script>
+		var app = angular.module('todoApp', []);
+		app.controller('todoCtrl', ['$scope', function ($scope) {
+			$scope.list = [];
+			$scope.id = 0;
+			// 添加待办事件
+			$scope.add = function () {
+				if ($scope.name.trim() != '') {
+					$scope.list.push({ id: $scope.id++, name: $scope.name, isFinished: false });
+					$scope.name = '';
+					$scope.count();
+				} 
+			};
+			// 删除待办事件
+			$scope.delete = function (id) {
+				for (var index in $scope.list) {
+					if ($scope.list[index].id == id) {
+						$scope.list.splice(index, 1);
+						break;
+					}
+				}
+				$scope.count();
+			}
+			// 标记已办事件
+			$scope.toogle = function (id) {
+				for (var index in $scope.list) {
+					if ($scope.list[index].id == id) {
+						$scope.list[index].isFinished = !($scope.list[index].isFinished);
+					}
+				}
+				$scope.count();
+			}
+			$scope.countNum = 0;
+			// 统计未完成的待办事项
+			$scope.count = function () {
+				$scope.countNum = 0;
+				for (var index in $scope.list) {
+					if ($scope.list[index].isFinished == false) {
+						$scope.countNum++
+					}
+				}
+			}
+			//删除已经完成了的待办事项
+			$scope.clear = function () {
+				var newArr = [];
+				for (var index in $scope.list) {
+					if ($scope.list[index].isFinished == false) {
+						newArr.push($scope.list[index])
+					}
+				}
+				$scope.list = newArr;
+			}
+		}]);
+	</script>
+</body>
+
+</html>
